@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>weather Dashboard</title>
+  <meta name="description" content="Weather Site">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#3b3b3b">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
+  
+
+</head>
+
+<body>
+
+   
+<div class="wrapper">
+
+       <header>
+              <h1 id="location"></h1>
+              <h4 id="date"></h4>
+              <h4 id="time"></h4>
+      </header>
+  
+     
+              <div class="card">
+                  <h1 id="current_temp"></h1>
+                  <h4 id="icon"></h4>
+                  <p id="warning"> </p>
+                  <h4 id="wind_speed"></h4>
+                  <h4 id="high_low"></h4>
+                  
+              </div>
+       
+  
+<br><br>
+      <div class="smallcard-container" id="hourly_forecast">
+
+
+      </div>
+
+
+</div>
+
+  
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.0.min.js"></script>
+
+  <script src="js/main.js"></script>
+
+
+
+</body>
+
+</html>
