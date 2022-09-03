@@ -26,7 +26,7 @@ window.onload = function(e){
     
             const mylat = position.coords.latitude;
             const mylong = position.coords.longitude;
-            const APIkey = ''; //please use your own key
+            const APIkey = '1234'; //please use your own key
             const units = 'metric';
             
             let current_weather_api_link = `https://api.openweathermap.org/data/2.5/weather?lat=${mylat}&lon=${mylong}&appid=${APIkey}&units=${units}`
