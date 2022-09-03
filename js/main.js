@@ -1,91 +1,93 @@
-console.log('main js loaded');
-
-var today = new Date();
-
-var monthnames = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-var month = today.getMonth();
-var monthname_now = monthnames[month];
-var daynames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ];
-var day = today.getDay();
-var dayname_now = daynames[day];
-
+let today = new Date();
+let monthnames = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+let month = today.getMonth();
+let monthname_now = monthnames[month];
+let daynames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ];
+let day = today.getDay();
+let dayname_now = daynames[day];
 
 function addZero(i) {
-    if (i < 10) {
-      i = "0" + i;
-    }
+    if (i < 10) {i = "0" + i;}
     return i;
-  }
-  
+}
+
 
 var h = addZero(today.getHours());
 var m = addZero(today.getMinutes());
 var s = addZero(today.getSeconds());
-  
 
-document.getElementById("date").innerHTML = dayname_now + " " + monthname_now+ ' ' +today.getDate() + "," + " " + today.getUTCFullYear();
+document.getElementById("date").innerHTML = ` ${monthname_now} ${today.getDate()}, ${today.getUTCFullYear()}, ${dayname_now}`;
 document.getElementById("time").innerHTML = h + ":" + m + ":" + s;
 
-var name_city = "Montreal";
-var units = "&units=metric";
-var link_current = "https://api.openweathermap.org/data/2.5/weather?q=";
-var link_hourly = "https://api.openweathermap.org/data/2.5/forecast/?q=";
-var appid= " ";//please use your own appid
+window.onload = function(e){ 
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            console.log(position.coords.latitude, position.coords.longitude);
+    
+            const mylat = position.coords.latitude;
+            const mylong = position.coords.longitude;
+            const APIkey = '60ec3181c0cb1b05ccb11f69f76993d7';
+            const units = 'metric';
+            
+            let current_weather_api_link = `https://api.openweathermap.org/data/2.5/weather?lat=${mylat}&lon=${mylong}&appid=${APIkey}&units=${units}`
 
-            $.getJSON( link_current + name_city + units + appid, function(data){
+           fetch(current_weather_api_link) 
+            .then(data => data.json()) 
+            .then(data => {
 
-                console.log(data);
-                //var icon = "http://openweathermap.org/img/w/" +data.weather[0].icon +".png";
-                var temp =  Math.floor(data.main.temp) + " " + '&#8451;';
-                var temp_max =  'High:' + " " + Math.floor(data.main.temp_max) + " " + '&#8451;';
-                var temp_min =  'Low:' + " " + Math.floor(data.main.temp_min) + " " + '&#8451;';
-                //var sky_cover = data.weather[0].main;
                 var iconCode = data.weather[0].icon;
                 var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
-                var wind = 'Wind Speed:' + " " + data.wind.speed + " " + 'km/hr';
-                var description = data.weather[0].description;
-                var high_low = temp_max + " " + temp_min;
-            
-                $("#location").append(name_city);
-                $("#current_temp").append(temp);
-                $("#high_low").append(high_low);
-                $("#wind_speed").append(wind);
-                $("#warning").append(description);
+
+                console.log(data);
+                $("#location").append(data.name);
+                $("#current_temp").append(`${data.main.temp} &#8451;`);
+                $("#feels_like").append(`Feels like: ${data.main.feels_like} &#8451;` );
                 $("#icon").html("<img src='" + iconUrl  + "'>");
+                $("#high").append(data.main.temp_max);
+                $("#high").append(data.main.temp_min);
+                $("#wind_speed").append(data.wind.speed);
+                $("#warning").append(data.weather[0].description);
+            }
 
-            });
+            )
+            .catch(err => console.log('Request Failed', err));
+            
+            let hourly_weather_api_link = `https://api.openweathermap.org/data/2.5/forecast?lat=${mylat}&lon=${mylong}&appid=${APIkey}&units=${units}`
 
-            //hourly forecast
-            $.getJSON(link_hourly + name_city + appid + units, 
-                
-                function(data) {
-                    //console.log(data);
-                    for( i = 0; i<10; i++) {
+            fetch(hourly_weather_api_link) 
+            .then(data => data.json()) 
+            .then(data => {
 
-                        var time_hourly = data.list[i].dt_txt;
-                        var temp_hourly = data.list[i].main.temp + '&#8451;';
-                        var temp_max_hourly = data.list[i].main.temp_max + '&#8451;';
-                        var temp_min_hourly = data.list[i].main.temp_min + '&#8451;';
-                        var description_hourly = data.list[i].weather[0].description;
-                        var iconCode_hourly = data.list[i].weather[0].icon;
-                        var iconUrl_hourly = "http://openweathermap.org/img/w/" + iconCode_hourly + ".png";
-                        
-                        //<img src="http://openweathermap.org/img/w/03n.png">
-                        console.log(time_hourly + " " + temp_hourly + " " + temp_max_hourly + " " + temp_min_hourly + " " + description_hourly + iconUrl_hourly);
-                  
-                        $("#hourly_forecast").append (
-                            '<div class="small-card">' + 
-                                '<p id="time_hourly">' +time_hourly + '</p>' + 
-                                '<h3 id="temp_hourly">' + temp_hourly +' </h3>' + 
-                                "<img src='" + iconUrl_hourly  + "'>" +
-                                '<p id="description_hourly">' + description_hourly + '</p>' +
-                            '</div>' 
-                    );
-
-               }
-        
-            });
+                for( i = 0; i<10; i++){
+                    var time_hourly = data.list[i].dt_txt;
+                    var temp_hourly = data.list[i].main.temp + '&#8451;';
+                    var temp_max_hourly = data.list[i].main.temp_max + '&#8451;';
+                    var temp_min_hourly = data.list[i].main.temp_min + '&#8451;';
+                    var description_hourly = data.list[i].weather[0].description;
+                    var iconCode_hourly = data.list[i].weather[0].icon;
+                    var iconUrl_hourly = "http://openweathermap.org/img/w/" + iconCode_hourly + ".png";
+                                            
+                                    
+                    $("#hourly_forecast").append (
+                                                '<div class="small-card">' + 
+                                                    '<p id="time_hourly">' +time_hourly + '</p>' + 
+                                                    '<h3 id="temp_hourly">' + temp_hourly +' </h3>' + 
+                                                    "<img src='" + iconUrl_hourly  + "'>" +
+                                                    '<p id="description_hourly">' + description_hourly + '</p>' +
+                                                '</div>' 
+                                        );
+                }
 
 
 
+            })
+            .catch(err => console.log('Request Failed', err));
 
+
+    
+          });
+      } else {
+        document.getElementById('unavailable').innerHTML = 'geolocation not available'
+      }
+  
+}
